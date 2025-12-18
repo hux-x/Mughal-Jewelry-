@@ -21,12 +21,8 @@ axiosInstance.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       }
     }
-
-    // 👉 ADD API KEY (if defined)
-    if (process.env.API_KEY) {
-      config.headers["x-api-key"] = process.env.API_KEY;
       
-    }
+
     console.log(process.env.API_KEY)
 
     // Log request in development
