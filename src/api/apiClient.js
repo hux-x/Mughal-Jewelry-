@@ -23,8 +23,9 @@ axiosInstance.interceptors.request.use(
     }
 
     // 👉 ADD API KEY (if defined)
-    if (process.env.NEXT_PUBLIC_API_KEY) {
-      config.headers["x-api-key"] = process.env.NEXT_PUBLIC_API_KEY;
+    if (process.env.API_KEY) {
+      config.headers["x-api-key"] = process.env.API_KEY;
+      
     }
 
     // Log request in development
