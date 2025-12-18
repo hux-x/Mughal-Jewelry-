@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://mughaljewelry.store
+
+# Sitemaps
+Sitemap: https://mughaljewelry.store/sitemap.xml
