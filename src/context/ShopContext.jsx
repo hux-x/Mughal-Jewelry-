@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useEffect, useState } from "react";
-import { products as initialProducts } from "@/src/assets/assets";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -15,18 +14,20 @@ const ShopContextProvider = ({ children }) => {
 
   const router = useRouter();
 
-  // Load cart from localStorage or initialize empty
+  // Load cart from localStorage - just store cart items array
   const [cartitems, setcartitem] = useState(() => {
     if (typeof window !== "undefined") {
       const storedCart = localStorage.getItem("cartitems");
-      return storedCart ? JSON.parse(storedCart) : {};
+      return storedCart ? JSON.parse(storedCart) : [];
     }
-    return {};
+    return [];
   });
 
-  // Persist cart in localStorage
+  // Persist cart in localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("cartitems", JSON.stringify(cartitems));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cartitems", JSON.stringify(cartitems));
+    }
   }, [cartitems]);
 
   const goToPage = (path) => {
@@ -39,58 +40,63 @@ const ShopContextProvider = ({ children }) => {
       return;
     }
 
-    let cartdata = structuredClone(cartitems);
+    // Check if item with same id and size already exists
+    const existingItemIndex = cartitems.findIndex(
+      (item) => item.productId === itemid && item.size === size
+    );
 
-    if (cartdata[itemid]) {
-      if (cartdata[itemid][size]) {
-        cartdata[itemid][size] += 1;
-      } else {
-        cartdata[itemid][size] = 1;
-      }
+    let updatedCart;
+
+    if (existingItemIndex !== -1) {
+      // Item exists, increment quantity
+      updatedCart = [...cartitems];
+      updatedCart[existingItemIndex].quantity += 1;
     } else {
-      cartdata[itemid] = { [size]: 1 };
+      // New item, add to cart
+      updatedCart = [
+        ...cartitems,
+        {
+          productId: itemid,
+          size: size,
+          quantity: 1,
+        },
+      ];
     }
 
-    setcartitem(cartdata);
+    setcartitem(updatedCart);
+    toast.success("Item added to cart!");
   };
 
   const updatequantity = async (itemid, size, quantity) => {
-    let cartdata = structuredClone(cartitems);
     if (quantity === 0) {
-      delete cartdata[itemid][size];
-      if (Object.keys(cartdata[itemid]).length === 0) {
-        delete cartdata[itemid];
-      }
+      // Remove item from cart
+      const updatedCart = cartitems.filter(
+        (item) => !(item.productId === itemid && item.size === size)
+      );
+      setcartitem(updatedCart);
+      toast.info("Item removed from cart");
     } else {
-      cartdata[itemid][size] = quantity;
+      // Update quantity
+      const updatedCart = cartitems.map((item) =>
+        item.productId === itemid && item.size === size
+          ? { ...item, quantity }
+          : item
+      );
+      setcartitem(updatedCart);
     }
-    setcartitem(cartdata);
   };
 
   const getcartcount = () => {
-    let totalcount = 0;
-    for (const itemid in cartitems) {
-      for (const size in cartitems[itemid]) {
-        totalcount += cartitems[itemid][size];
-      }
-    }
-    return totalcount;
+    return cartitems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const getcartammount = () => {
-    let totalamount = 0;
-    for (const itemid in cartitems) {
-      let iteminfo = initialProducts.find((product) => product._id === itemid);
-      if (!iteminfo) continue;
-      for (const size in cartitems[itemid]) {
-        totalamount += iteminfo.price * cartitems[itemid][size];
-      }
-    }
-    return totalamount;
+  const clearcart = () => {
+    setcartitem([]);
+    localStorage.removeItem("cartitems");
+    toast.info("Cart cleared");
   };
 
   const value = {
-    products: initialProducts,
     currency,
     deliveryFee,
     search,
@@ -101,8 +107,8 @@ const ShopContextProvider = ({ children }) => {
     addtocart,
     getcartcount,
     updatequantity,
-    getcartammount,
     goToPage,
+    clearcart,
   };
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

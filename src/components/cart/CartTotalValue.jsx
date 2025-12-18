@@ -1,9 +1,25 @@
-import React, { useContext } from "react";
+"use client";
+import React, { useContext, useMemo } from "react";
 import { ShopContext } from "@/src/context/ShopContext";
 import Title from "@/src/components/ui/Title";
 
-const Totalcartvalue = () => {
-  const { getcartammount, currency, deliveryFee } = useContext(ShopContext);
+const Totalcartvalue = ({ cartProducts }) => {
+  const { currency, deliveryFee, cartitems } = useContext(ShopContext);
+
+  const { subtotal, total } = useMemo(() => {
+    let subtotal = 0;
+
+    cartitems.forEach((item) => {
+      const product = cartProducts.find((p) => p._id === item.productId);
+      if (product) {
+        subtotal += product.price * item.quantity;
+      }
+    });
+
+    const total = subtotal > 0 ? subtotal + deliveryFee : 0;
+
+    return { subtotal, total };
+  }, [cartitems, cartProducts, deliveryFee]);
 
   return (
     <div className="w-full">
@@ -13,17 +29,26 @@ const Totalcartvalue = () => {
       <div className="flex flex-col gap-2 mt-2 text-sm">
         <div className="flex justify-between">
           <p>SUBTOTAL</p>
-          <p>{currency}{getcartammount()}</p>
+          <p>
+            {currency}
+            {subtotal.toFixed(2)}
+          </p>
         </div>
         <hr />
         <div className="flex justify-between">
           <p>Shipping Fee</p>
-          <p>{currency}{deliveryFee}</p>
+          <p>
+            {currency}
+            {deliveryFee.toFixed(2)}
+          </p>
         </div>
         <hr />
         <div className="flex justify-between">
           <b>TOTAL</b>
-          <p>{currency}{getcartammount() === 0 ? 0 : getcartammount() + deliveryFee}</p>
+          <p>
+            {currency}
+            {total.toFixed(2)}
+          </p>
         </div>
       </div>
     </div>

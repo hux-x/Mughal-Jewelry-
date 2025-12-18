@@ -3,6 +3,7 @@ import React from "react";
 import Image from "next/image";
 import { assets } from "@/src/assets/assets";
 import { FaFacebookF, FaInstagram, FaPinterestP, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -35,10 +36,10 @@ const Footer = () => {
           {/* Shop */}
           <div className="flex flex-col gap-2">
             <h3 className="font-semibold text-white">Shop</h3>
-            <a href="/shop/collection/ear-rings" className="hover:text-white transition">Ear Rings</a>
-            <a href="/shop/collection/necklaces" className="hover:text-white transition">Necklaces</a>
-            <a href="/shop/collection/bridal-sets" className="hover:text-white transition">Bridal Sets</a>
-            <a href="/collections" className="hover:text-white transition">All Collections</a>
+            <Link href="/shop?category=Earrings" className="hover:text-white transition">Ear Rings</Link>
+            <a href="/shop?category=necklaces" className="hover:text-white transition">Necklaces</a>
+            <a href="/shop?category=bridal-sets" className="hover:text-white transition">Bridal Sets</a>
+            <a href="/shop" className="hover:text-white transition">All Collections</a>
           </div>
 
           {/* Policies & Terms */}

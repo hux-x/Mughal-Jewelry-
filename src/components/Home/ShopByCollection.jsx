@@ -1,10 +1,41 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { collections } from "../../assets/assets";
+import productService from "@/src/api/services/productService";
 
 const ShopByCollection = () => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const getCategories = async () => {
+      try {
+        const res = await productService.getCategories();
+        console.log(res.categories);
+        // Fix: Access res.data.categories instead of data.categories
+        if (res&& res.categories) {
+          setCategories(res.categories.slice(0,7));
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getCategories();
+  }, []); // Fix: Add empty dependency array to prevent infinite loop
+
+  if (loading) {
+    return (
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-6xl mx-auto text-center">
+          <p className="text-gray-600">Loading collections...</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-6xl mx-auto">
@@ -18,16 +49,16 @@ const ShopByCollection = () => {
 
         {/* Collections Grid */}
         <div className="flex flex-wrap justify-center gap-8 sm:gap-8 lg:gap-10">
-          {collections.map((collection, index) => (
+          {categories.map((collection, index) => (
             <Link
-              key={collection.slug}
+              key={collection._id}
               href={`/shop?category=${collection.slug}`}
               className="group flex flex-col items-center animate-fadeIn"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+              <div className="relative w-33 h-33 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                 <Image
-                  src={collection.image}
+                  src={`${collection.imageSlug}.webp`}
                   alt={collection.name}
                   fill
                   className="object-cover object-center transition-transform duration-500 group-hover:scale-110"
@@ -35,10 +66,10 @@ const ShopByCollection = () => {
                 />
 
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
 
                 {/* Text Overlay */}
-                <div className="absolute inset-0 flex items-end justify-center pb-4">
+                <div className="absolute inset-0 flex items-end justify-center pb-8">
                   <span className="text-white font-semibold text-sm sm:text-base text-center px-2 drop-shadow-lg">
                     {collection.name}
                   </span>
@@ -51,9 +82,9 @@ const ShopByCollection = () => {
           <Link
             href="/collections"
             className="group flex flex-col items-center animate-fadeIn"
-            style={{ animationDelay: `${collections.length * 0.1}s` }}
+            style={{ animationDelay: `${categories.length * 0.1}s` }}
           >
-            <div className="flex items-center justify-center w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full bg-gray-100 hover:bg-gray-900 border-2 border-gray-200 hover:border-gray-900 shadow-lg hover:shadow-2xl transition-all duration-300">
+            <div className="flex items-center justify-center w-33 h-33 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full bg-gray-100 hover:bg-gray-900 border-2 border-gray-200 hover:border-gray-900 shadow-lg hover:shadow-2xl transition-all duration-300">
               <div className="text-center">
                 <div className="text-gray-700 group-hover:text-white font-semibold text-sm sm:text-base transition-colors duration-300">
                   Browse

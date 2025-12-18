@@ -7,19 +7,19 @@ const ProductFilters = ({
   onFiltersChange,
   isOpen,
   onClose,
+  categories = [],
+  categoriesLoading = false,
 }) => {
-  const categories = ["Earrings", "Necklaces", "Rings", "Bracelets", "Bangles", "Maalas","Bridal Sets","Combo Sets"];
-  
   const [priceRange, setPriceRange] = useState({
     min: filters.minPrice || "",
     max: filters.maxPrice || ""
   });
 
-  const handleCategoryToggle = (cat) => {
+  const handleCategoryToggle = (categorySlug) => {
     const currentCategories = filters.category || [];
-    const newCategories = currentCategories.includes(cat)
-      ? currentCategories.filter((c) => c !== cat)
-      : [...currentCategories, cat];
+    const newCategories = currentCategories.includes(categorySlug)
+      ? currentCategories.filter((c) => c !== categorySlug)
+      : [...currentCategories, categorySlug];
     
     onFiltersChange({ ...filters, category: newCategories });
   };
@@ -99,24 +99,38 @@ const ProductFilters = ({
             <h4 className="font-medium text-sm text-gray-900 mb-3 uppercase tracking-wide">
               Categories
             </h4>
-            <div className="space-y-2">
-              {categories.map((cat) => (
-                <label
-                  key={cat}
-                  className="flex items-center gap-3 cursor-pointer group"
-                >
-                  <input
-                    type="checkbox"
-                    checked={filters.category?.includes(cat) || false}
-                    onChange={() => handleCategoryToggle(cat)}
-                    className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black cursor-pointer"
-                  />
-                  <span className="text-sm text-gray-700 group-hover:text-black transition-colors">
-                    {cat}
-                  </span>
-                </label>
-              ))}
-            </div>
+            
+            {categoriesLoading ? (
+              <div className="space-y-2">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-4 bg-gray-200 rounded flex-1 animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            ) : categories.length > 0 ? (
+              <div className="space-y-2">
+                {categories.map((cat) => (
+                  <label
+                    key={cat._id}
+                    className="flex items-center gap-3 cursor-pointer group"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={filters.category?.includes(cat.slug) || false}
+                      onChange={() => handleCategoryToggle(cat.slug)}
+                      className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black cursor-pointer"
+                    />
+                    <span className="text-sm text-gray-700 group-hover:text-black transition-colors">
+                      {cat.name}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">No categories available</p>
+            )}
           </div>
 
           {/* Divider */}
@@ -179,14 +193,12 @@ const ProductFilters = ({
           </div>
 
           {/* Clear All Button */}
-          {hasActiveFilters && (
-            <button
-              onClick={clearAllFilters}
-              className="w-full mt-6 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-            >
-              Clear All Filters
-            </button>
-          )}
+          <button
+            onClick={clearAllFilters}
+            className="w-full mt-6 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            Clear All Filters
+          </button>
         </div>
       </div>
     </>

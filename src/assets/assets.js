@@ -22,13 +22,13 @@ export const assets = {
 
 export const collections = [
   { name: "Ear Rings",     image: "/collections/earrings-2.jpg", slug: "Earrings" },
-  { name: "Necklaces",     image: "/collections/Necklaces.jpg",  slug: "Necklaces" },
-  { name: "Bridal Sets",   image: "/collections/bridalsets.jpg", slug: "Bridal Sets" },
+  { name: "Necklaces",     image: "/collections/Necklaces.jpg",  slug: "necklaces" },
+  { name: "Bridal Sets",   image: "/collections/bridalsets.jpg", slug: "bridal-sets" },
   { name: "Maalas",        image: "/collections/malas.png",       slug: "Maalas" },
   { name: "Rings",         image: "/collections/rings-fixed.jpg",      slug: "Rings" },
   { name: "Bracelets",     image: "/collections/bracelets.jpg",  slug: "Bracelets" },
   { name: "Bangles",       image: "/collections/bangles.png",    slug: "Bangles" },
-  { name: "Combo Sets",       image: "/collections/combos.jpg",    slug: "Combo Sets" },
+  { name: "Combo Sets",       image: "/collections/combos.jpg",    slug: "combo-sets" },
 ];
 
 
@@ -44,8 +44,8 @@ export const products = [
     price: 100,
     image: [image1],
     category: "Earrings",
-    date: 1716634345448,
-    bestseller: true,
+    stock:12,
+    inStock:true
   },
   {
     _id: "p002",
@@ -54,8 +54,8 @@ export const products = [
     price: 130,
     image: [image1],
     category: "Earrings",
-    date: 1716722345448,
-    bestseller: true,
+    stock:12,
+    inStock:true
   },
 
   /* ================= NECKLACES ================= */
@@ -66,8 +66,8 @@ export const products = [
     price: 200,
     image: [image2, image3],
     category: "necklaces",
-    date: 1716821345448,
-    bestseller: true,
+    stock:12,
+    inStock:true
   },
   {
     _id: "p004",
@@ -76,8 +76,8 @@ export const products = [
     price: 180,
     image: [image3],
     category: "necklaces",
-    date: 1716921345448,
-    bestseller: false,
+    stock:0,
+    inStock:false
   },
 
   /* ================= BRIDAL SETS ================= */
@@ -87,9 +87,9 @@ export const products = [
     description: "Luxurious bridal jewelry set for weddings and receptions.",
     price: 850,
     image: [image4],
-    category: "Bridal Sets",
-    date: 1717024545448,
-    bestseller: true,
+    category: "bridal-sets",
+    stock:0,
+    inStock:false
   },
   {
     _id: "p006",
@@ -97,9 +97,9 @@ export const products = [
     description: "Traditional bridal set with elegant craftsmanship.",
     price: 720,
     image: [image4],
-    category: "Bridal Sets",
-    date: 1717124545448,
-    bestseller: false,
+    category: "bridal-sets",
+    stock:0,
+    inStock:false
   },
 
   /* ================= MAALAS ================= */
@@ -110,8 +110,8 @@ export const products = [
     price: 320,
     image: [image2],
     category: "Maalas",
-    date: 1717223423448,
-    bestseller: true,
+    stock:0,
+    inStock:false
   },
   {
     _id: "p008",
@@ -120,8 +120,8 @@ export const products = [
     price: 290,
     image: [image1],
     category: "Maalas",
-    date: 1717323423448,
-    bestseller: false,
+    stock:0,
+    inStock:false
   },
 
   /* ================= RINGS ================= */
@@ -132,8 +132,8 @@ export const products = [
     price: 150,
     image: [image3],
     category: "Rings",
-    date: 1717421345448,
-    bestseller: true,
+    stock:0,
+    inStock:false
   },
   {
     _id: "p010",
@@ -142,8 +142,8 @@ export const products = [
     price: 95,
     image: [image2],
     category: "Rings",
-    date: 1717521345448,
-    bestseller: false,
+    stock:0,
+    inStock:false
   },
 
   /* ================= BRACELETS ================= */
@@ -154,8 +154,8 @@ export const products = [
     price: 110,
     image: [image3],
     category: "Bracelets",
-    date: 1717621345448,
-    bestseller: true,
+    stock:0,
+    inStock:false
   },
   {
     _id: "p012",
@@ -164,8 +164,8 @@ export const products = [
     price: 125,
     image: [image4],
     category: "Bracelets",
-    date: 1717721345448,
-    bestseller: false,
+    stock:0,
+    inStock:false
   },
 
   /* ================= BANGLES ================= */
@@ -176,8 +176,8 @@ export const products = [
     price: 260,
     image: [image5],
     category: "Bangles",
-    date: 1717824545448,
-    bestseller: true,
+    stock:0,
+    inStock:false
   },
   {
     _id: "p014",
@@ -186,8 +186,8 @@ export const products = [
     price: 210,
     image: [image5],
     category: "Bangles",
-    date: 1717924545448,
-    bestseller: false,
+    stock:0,
+    inStock:false
   },
 
   /* ================= COMBO SETS ================= */
@@ -197,9 +197,9 @@ export const products = [
     description: "Perfectly matched necklace and earrings combo set.",
     price: 340,
     image: [image1, image2],
-    category: "Combo Sets",
-    date: 1718021345448,
-    bestseller: true,
+    category: "combo-sets",
+    stock:0,
+    inStock:false
   },
   {
     _id: "p016",
@@ -207,8 +207,8 @@ export const products = [
     description: "Complete jewelry combo set ideal for festive occasions.",
     price: 420,
     image: [image3, image4],
-    category: "Combo Sets",
-    date: 1718121345448,
-    bestseller: false,
+    category: "combo-sets",
+    stock:0,
+    inStock:false
   },
 ];
