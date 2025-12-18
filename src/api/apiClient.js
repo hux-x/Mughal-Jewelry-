@@ -27,6 +27,7 @@ axiosInstance.interceptors.request.use(
       config.headers["x-api-key"] = process.env.API_KEY;
       
     }
+    console.log(process.env.API_KEY)
 
     // Log request in development
     if (process.env.NODE_ENV === "development") {
