@@ -268,7 +268,7 @@ Please notify me when it's available.`;
 
                   <button
                     onClick={() =>
-                      window.open(`https://wa.me/923001234567`, "_blank")
+                      window.open(`https://wa.me/923096399939`, "_blank")
                     }
                     className="w-full border border-gray-300 py-4 text-sm font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2"
                   >

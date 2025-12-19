@@ -5,6 +5,7 @@ import Title from "@/src/components/ui/Title";
 import Totalcartvalue from "@/src/components/cart/CartTotalValue";
 import { Trash as Bin, Plus, Minus } from "lucide-react";
 import productService from "@/src/api/services/productService";
+import Link from "next/link";
 
 const Cart = () => {
   const { currency, cartitems, updatequantity, goToPage } = useContext(ShopContext);
@@ -284,12 +285,12 @@ const Cart = () => {
           </div>
         </div>
         <div className="w-full sm:text-end mt-6 sm:mt-0">
-          <button
-            onClick={() => goToPage("/placeholder")}
+          <Link
+            href={"/cart/checkout"}
             className="w-full sm:w-auto bg-black text-white px-8 py-3 text-sm hover:bg-gray-800 transition-colors"
           >
             PROCEED TO ORDER
-          </button>
+          </Link>
         </div>
       </div>
     </div>

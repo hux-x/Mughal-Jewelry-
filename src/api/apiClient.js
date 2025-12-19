@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://ecom-backend-mughal-jewelry.vercel.app/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api",
   timeout: 10000, // 10 seconds
   headers: {
     "Content-Type": "application/json",
