@@ -102,7 +102,24 @@ Status: Out of stock
 Please notify me when it's available.`;
 
     window.open(
-      `https://wa.me/923001234567?text=${encodeURIComponent(message)}`,
+      `https://wa.me/923096399939?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
+  };
+
+  // New function for in-stock WhatsApp orders
+  const handleWhatsAppOrder = () => {
+    const message = `Hi! I want to buy this product:
+
+Product: ${productData.name}
+Price: ${currency} ${productData.price.toLocaleString()}
+Quantity: ${quantity}
+Total: ${currency} ${totalPrice.toLocaleString()}
+
+I want to buy this.`;
+
+    window.open(
+      `https://wa.me/923096399939?text=${encodeURIComponent(message)}`,
       "_blank"
     );
   };
@@ -267,9 +284,7 @@ Please notify me when it's available.`;
                   </button>
 
                   <button
-                    onClick={() =>
-                      window.open(`https://wa.me/923096399939`, "_blank")
-                    }
+                    onClick={handleWhatsAppOrder}
                     className="w-full border border-gray-300 py-4 text-sm font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2"
                   >
                     <MessageCircle size={18} />
