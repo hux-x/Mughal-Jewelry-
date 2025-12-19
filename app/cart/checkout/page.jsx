@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "@/src/context/ShopContext";
 import Title from "@/src/components/ui/Title";
-import { CreditCard, Banknote, Lock, ChevronRight } from "lucide-react";
+import { CreditCard, Banknote, Lock, ChevronRight, CheckCircle, Package } from "lucide-react";
 import productService from "@/src/api/services/productService";
 import orderService from "@/src/api/services/orderService";
 
@@ -12,6 +12,10 @@ const Checkout = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+
+  // Success state
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderId, setOrderId] = useState("");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -78,7 +82,7 @@ const Checkout = () => {
       }
     });
 
-    const deliveryFee = subtotal > 0 ? 100 : 0; // Free delivery over certain amount
+    const deliveryFee = subtotal > 0 ? 100 : 0;
     const total = subtotal + deliveryFee;
 
     return { subtotal, deliveryFee, total };
@@ -127,7 +131,6 @@ const Checkout = () => {
       ...prev,
       [name]: value,
     }));
-    // Clear error for this field
     if (formErrors[name]) {
       setFormErrors((prev) => ({
         ...prev,
@@ -144,7 +147,6 @@ const Checkout = () => {
       return;
     }
 
-    // Check stock availability
     const outOfStockItems = cartitems.filter((item) => {
       const product = cartProducts.find((p) => p._id === item.productId);
       return (
@@ -162,7 +164,6 @@ const Checkout = () => {
     setError(null);
 
     try {
-      // Prepare order data
       const orderData = {
         products: cartitems.map((item) => ({
           product: item.productId,
@@ -185,11 +186,9 @@ const Checkout = () => {
 
       if (response.success) {
         if (paymentMethod === "cod") {
-          // Show OTP modal for COD
           setMPaymentId(response.data.payment.mPaymentId);
           setShowOTPModal(true);
         } else {
-          // Redirect to PayFast
           orderService.submitPayFastPayment(
             response.payfast.data,
             response.payfast.url
@@ -220,11 +219,18 @@ const Checkout = () => {
       const response = await orderService.verifyOrderOTP(mPaymentId, otp);
 
       if (response.success) {
-        // Clear cart and redirect to success page
+        // Clear cart
         cartitems.forEach((item) => {
           updatequantity(item.productId, item.size, 0);
         });
-        goToPage(`/order-success?orderId=${mPaymentId}`);
+        
+        // Show success message
+        setOrderId(mPaymentId);
+        setOrderSuccess(true);
+        setShowOTPModal(false);
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch (err) {
       console.error("OTP verification error:", err);
@@ -264,7 +270,7 @@ const Checkout = () => {
     );
   }
 
-  if (cartitems.length === 0) {
+  if (cartitems.length === 0 && !orderSuccess) {
     return (
       <div className="border-t pt-8 sm:pt-14 px-4 sm:px-8 lg:px-32 text-center min-h-[90vh]">
         <Title text1={"CHECKOUT"} text2={""} />
@@ -279,6 +285,76 @@ const Checkout = () => {
     );
   }
 
+  // Success View
+  if (orderSuccess) {
+    return (
+      <div className="border-t pt-8 sm:pt-14 px-4 sm:px-8 lg:px-32 pb-16 min-h-[90vh]">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-lg border p-8 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
+              <CheckCircle className="w-10 h-10 text-green-600" />
+            </div>
+            
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              Order Placed Successfully!
+            </h1>
+            
+            <p className="text-gray-600 mb-2">
+              Thank you for your order. We&apos;ve received your order and will process it shortly.
+            </p>
+            
+            <div className="bg-gray-50 rounded-lg p-4 my-6">
+              <p className="text-sm text-gray-500 mb-1">Order ID</p>
+              <p className="text-lg font-mono font-semibold text-gray-900">{orderId}</p>
+            </div>
+            
+            <div className="border-t pt-6 mb-6">
+              <div className="flex items-center justify-center gap-2 text-gray-600 mb-4">
+                <Package className="w-5 h-5" />
+                <span className="text-sm">Order Summary</span>
+              </div>
+              
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Subtotal:</span>
+                  <span className="font-medium">{currency} {subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Delivery Fee:</span>
+                  <span className="font-medium">{currency} {deliveryFee.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t font-semibold text-base">
+                  <span>Total:</span>
+                  <span>{currency} {total.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+            
+            <p className="text-sm text-gray-500 mb-6">
+              A confirmation email has been sent to <strong>{formData.email}</strong>
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={() => goToPage("/shop")}
+                className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                Continue Shopping
+              </button>
+              <button
+                onClick={() => goToPage("/")}
+                className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Go to Homepage
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Checkout Form View
   return (
     <div className="border-t pt-8 sm:pt-14 px-4 sm:px-8 lg:px-32 pb-16">
       <div className="text-2xl mb-8">
