@@ -16,6 +16,8 @@ const Checkout = () => {
   // Success state
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderId, setOrderId] = useState("");
+  const [orderTotal, setOrderTotal] = useState(0);
+  const [orderEmail, setOrderEmail] = useState("");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -28,7 +30,7 @@ const Checkout = () => {
   });
 
   const [formErrors, setFormErrors] = useState({});
-  const [paymentMethod, setPaymentMethod] = useState("payfast"); // 'payfast' or 'cod'
+  const [paymentMethod, setPaymentMethod] = useState("payfast");
   
   // OTP state for COD
   const [showOTPModal, setShowOTPModal] = useState(false);
@@ -37,12 +39,50 @@ const Checkout = () => {
   const [mPaymentId, setMPaymentId] = useState("");
   const [resendingOTP, setResendingOTP] = useState(false);
 
+  // Check for payment return (PayFast success/cancel)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const orderId = urlParams.get('orderId');
+    const paymentTotal = urlParams.get('total');
+    const email = urlParams.get('email');
+
+    if (paymentStatus === 'success' && orderId) {
+      // Payment was successful
+      setOrderSuccess(true);
+      setOrderId(orderId);
+      setOrderTotal(parseFloat(paymentTotal) || 0);
+      setOrderEmail(email || '');
+      
+      // Clear the cart
+      cartitems.forEach((item) => {
+        updatequantity(item.productId, item.size, 0);
+      });
+
+      // Clean up URL
+      window.history.replaceState({}, '', '/checkout');
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (paymentStatus === 'cancel') {
+      setError('Payment was cancelled. Please try again.');
+      // Clean up URL
+      window.history.replaceState({}, '', '/checkout');
+    }
+  }, []);
+
   // Fetch cart products
   useEffect(() => {
     const fetchCartProducts = async () => {
-      if (cartitems.length === 0) {
+      // Don't redirect if order was just successful
+      if (cartitems.length === 0 && !orderSuccess) {
         setLoading(false);
         goToPage("/cart");
+        return;
+      }
+
+      if (cartitems.length === 0) {
+        setLoading(false);
         return;
       }
 
@@ -70,7 +110,7 @@ const Checkout = () => {
     };
 
     fetchCartProducts();
-  }, [cartitems, goToPage]);
+  }, [cartitems, goToPage, orderSuccess]);
 
   // Calculate totals
   const calculateTotals = () => {
@@ -189,6 +229,11 @@ const Checkout = () => {
           setMPaymentId(response.data.payment.mPaymentId);
           setShowOTPModal(true);
         } else {
+          // Store order info before redirecting
+          const returnUrl = `${window.location.origin}/checkout?payment=success&orderId=${response.data._id}&total=${total}&email=${formData.email}`;
+          
+          // Add return URL to PayFast data if possible
+          // You might need to modify the submitPayFastPayment to accept returnUrl
           orderService.submitPayFastPayment(
             response.payfast.data,
             response.payfast.url
@@ -219,6 +264,10 @@ const Checkout = () => {
       const response = await orderService.verifyOrderOTP(mPaymentId, otp);
 
       if (response.success) {
+        // Store order details before clearing cart
+        setOrderEmail(formData.email);
+        setOrderTotal(total);
+        
         // Clear cart
         cartitems.forEach((item) => {
           updatequantity(item.productId, item.size, 0);
@@ -287,6 +336,11 @@ const Checkout = () => {
 
   // Success View
   if (orderSuccess) {
+    const displaySubtotal = orderTotal > 0 ? orderTotal - 100 : subtotal;
+    const displayDeliveryFee = orderTotal > 0 ? 100 : deliveryFee;
+    const displayTotal = orderTotal > 0 ? orderTotal : total;
+    const displayEmail = orderEmail || formData.email;
+
     return (
       <div className="border-t pt-8 sm:pt-14 px-4 sm:px-8 lg:px-32 pb-16 min-h-[90vh]">
         <div className="max-w-2xl mx-auto">
@@ -317,21 +371,21 @@ const Checkout = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal:</span>
-                  <span className="font-medium">{currency} {subtotal.toFixed(2)}</span>
+                  <span className="font-medium">{currency} {displaySubtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Delivery Fee:</span>
-                  <span className="font-medium">{currency} {deliveryFee.toFixed(2)}</span>
+                  <span className="font-medium">{currency} {displayDeliveryFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t font-semibold text-base">
                   <span>Total:</span>
-                  <span>{currency} {total.toFixed(2)}</span>
+                  <span>{currency} {displayTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>
             
             <p className="text-sm text-gray-500 mb-6">
-              A confirmation email has been sent to <strong>{formData.email}</strong>
+              A confirmation email has been sent to <strong>{displayEmail}</strong>
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
