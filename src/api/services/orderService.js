@@ -1,5 +1,5 @@
 // src/services/orderService.js
-import axiosInstance from "@/src/api/apiClient";
+import axiosInstance from "../apiClient";
 
 const orderService = {
   /**
