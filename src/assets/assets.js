@@ -7,7 +7,7 @@ import image5 from '../assets/hero/image-5.jpg';
 import CartIcon from './layout/cart_icon.png';
 import SearchIcon from './layout/search_icon.png';
 import MenuIcon from './layout/menu_icon.png';
-import logo from '../assets/layout/logo.png';
+import logo from '../../app/favicon.ico';
 import bin_icon from './layout/bin_icon.png'
 
 export const assets = {
